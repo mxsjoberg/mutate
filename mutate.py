@@ -83,6 +83,7 @@ def generate_population(f, n_pop, x_range, y_range, m_bits):
 
     return pop_lst
 
+# TODO: set random crossover points
 def generate_offsprings(population, crossover):
     """Generate offsprings
 
