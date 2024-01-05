@@ -107,21 +107,6 @@ for range_ in frange.split("] ["):
 
 print(ranges)
 
-# ranges = []
 
-# cursor_pos = 0
-# while cursor_pos < len(frange):
-#     if frange[cursor_pos] == '[':
-#         range_ = []
-#         cursor_pos += 1
-#         range_.append(frange[cursor_pos])
-#         cursor_pos += 1
-#         cursor_pos += 1
-#         range_.append(frange[cursor_pos])
-#         cursor_pos += 1
 
-#         ranges.append(range_)
 
-#     cursor_pos += 1
-
-# print(ranges)
