@@ -6,6 +6,11 @@ from tabulate import tabulate
 
 random.seed(42)
 
+program = """
+f: (x, y) -> -x * (y / 2 - 10); [10, 20] [-5, 7]
+p: 10 4
+"""
+
 def print_as_table(population):
     table = tabulate(
         population,
@@ -82,25 +87,40 @@ def generate_population(f, n_pop, x_range, y_range, m_bits):
 
     return pop_lst
 
-program = """f: (x, y) -> -x * (y / 2 - 10); [10, 20] [-5, 7]"""
+def parse(program):
+    for line in program.split("\n"):
+        line = line.strip()
+        if len(line) == 0:
+            pass
+        elif line[0] == "f":
+            fdef, ffun = line.split("->")[0], line.split("->")[1]
+            args = fdef.split(":")[1].strip()
+            fexpr, frange = ffun.split(";")[0].strip(), ffun.split(";")[1].strip()
 
-fdef, ffun = program.split("->")[0], program.split("->")[1]
-args = fdef.split(":")[1].strip()
-fexpr, frange = ffun.split(";")[0].strip(), ffun.split(";")[1].strip()
+            symbols = sp.symbols(args[1:-1].split(","))
+            expr = sp.sympify(fexpr)
 
-symbols = sp.symbols(args[1:-1].split(","))
-expr = sp.sympify(fexpr)
+            f = sp.lambdify(symbols, expr, 'numpy')
+            # print(f(1, 2))
 
-f = sp.lambdify(symbols, expr, 'numpy')
-# print(f(1, 2))
+            ranges = []
+            for range_ in frange.split("] ["):
+                frange_cleaned = range_.replace("[", "").replace("]", "")
+                ranges.append((int(frange_cleaned.split(",")[0]), int(frange_cleaned.split(",")[1])))
+            # print(ranges)
 
-ranges = []
+            print(f"f: {expr}, s.t. {symbols} {ranges}\n")
 
-for range_ in frange.split("] ["):
-    frange_cleaned = range_.replace("[", "").replace("]", "")
-    ranges.append((int(frange_cleaned.split(",")[0]), int(frange_cleaned.split(",")[1])))
-# print(ranges)
+        elif line[0] == "p":
+            args = line.split(":")[1].strip()
+            npop, mbits = int(args.split(" ")[0]), int(args.split(" ")[1])
+            # print(npop, mbits)
 
-current_population = generate_population(f, 100, ranges[0], ranges[1], 4)
-print_as_table(current_population)
+            print(f"npop: {npop}, mbits: {mbits}\n")
+            
+            current_population = generate_population(f, npop, ranges[0], ranges[1], mbits)
+            print_as_table(current_population)
+
+if __name__ == "__main__":
+    parse(program)
 
