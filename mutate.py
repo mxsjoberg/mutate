@@ -91,7 +91,7 @@ def generate_offsprings(population, crossover):
     """
     n = 0
     offsprings_lst = []
-    
+
     while n < len(population):
         offsprings_lst.append(
             population[n][1][0:crossover[0]] +
@@ -165,9 +165,9 @@ def update_population(f, current_population, offsprings, keep, x_range, y_range,
 ### ---
 
 def parse_function(line):
-    fdef, ffun = line.split("->")[0], line.split("->")[1]
+    fdef, fexpr = line.split("->")[0], line.split("->")[1]
     args = fdef.split(":")[1].strip()
-    fexpr, frange = ffun.split(";")[0].strip(), ffun.split(";")[1].strip()
+    # fexpr, frange = ffun.split(";")[0].strip(), ffun.split(";")[1].strip()
 
     symbols = sp.symbols(args[1:-1].split(","))
     expr = sp.sympify(fexpr)
@@ -175,34 +175,46 @@ def parse_function(line):
     fun = sp.lambdify(symbols, expr, 'numpy')
     # print(f(1, 2))
 
-    for range_ in frange.split("] ["):
+    # for range_ in frange.split("] ["):
+    #     frange_cleaned = range_.replace("[", "").replace("]", "")
+    #     ranges.append((int(frange_cleaned.split(",")[0]), int(frange_cleaned.split(",")[1])))
+
+    print(f"function -> {expr}\n")
+
+    return fun, symbols
+
+def parse_ranges(line):
+    args = line.split(":")[1].strip()
+    ranges = []
+    for range_ in args.split("] ["):
         frange_cleaned = range_.replace("[", "").replace("]", "")
         ranges.append((int(frange_cleaned.split(",")[0]), int(frange_cleaned.split(",")[1])))
 
-    print(f"fun: {expr}, s.t. {symbols} {ranges}\n")
+    print(f"ranges -> {ranges}\n")
 
-    return fun, symbols, ranges
+    return ranges
 
 def parse_population(line):
     args = line.split(":")[1].strip()
     npop, mbits = int(args.split(" ")[0]), int(args.split(" ")[1])
     # print(npop, mbits)
 
-    print(f"npop: {npop}, mbits: {mbits}\n")
+    print(f"population : npop -> {npop}, mbits -> {mbits}\n")
     
     pop = generate_population(fun, npop, ranges[0], ranges[1], mbits)
     print_as_table(pop)
 
     return pop, npop, mbits
 
-# f: (x, y) -> -x * (y / 2 - 10); [10, 20] [-5, 7]
+# f: (x, y) -> -x * (y / 2 - 10)
+# r: [10, 20] [-5, 7]
 # p: 10 4
-# mutate! 10
+# !mutate 10
 
 if __name__ == "__main__":
     fun, pop, npop, mbits, offsprings = None, None, None, None, None
-    symbols = []
-    ranges = []
+    # symbols = []
+    # ranges = []
     
     # parse(program)
     while True:
@@ -214,12 +226,15 @@ if __name__ == "__main__":
             break
 
         if line[0] == "f":
-            fun, symbols, ranges = parse_function(line)
+            fun, symbols = parse_function(line)
+
+        if line[0] == "r":
+            ranges = parse_ranges(line)
 
         if line[0] == "p":
             pop, npop, mbits = parse_population(line)
 
-        if line[0] == "m":
+        if line.startswith("!mutate"):
             args = line.split(" ")
             if len(args) > 1:
                 MAX_RUNS = int(line.split(" ")[1])
