@@ -8,7 +8,7 @@ random.seed(42)
 
 def print_as_table(population):
     table = tabulate(
-        population,
+        population[:10] if len(population) > 10 else population,
         headers=['n', 'encoding', 'decoded x, y', 'cost'],
         floatfmt=".3f",
         tablefmt="simple"
@@ -167,17 +167,11 @@ def update_population(f, current_population, offsprings, keep, x_range, y_range,
 def parse_function(line):
     fdef, fexpr = line.split("->")[0], line.split("->")[1]
     args = fdef.split(":")[1].strip()
-    # fexpr, frange = ffun.split(";")[0].strip(), ffun.split(";")[1].strip()
-
     symbols = sp.symbols(args[1:-1].split(","))
     expr = sp.sympify(fexpr)
 
     fun = sp.lambdify(symbols, expr, 'numpy')
     # print(f(1, 2))
-
-    # for range_ in frange.split("] ["):
-    #     frange_cleaned = range_.replace("[", "").replace("]", "")
-    #     ranges.append((int(frange_cleaned.split(",")[0]), int(frange_cleaned.split(",")[1])))
 
     print(f"function -> {expr}\n")
 
@@ -197,7 +191,6 @@ def parse_ranges(line):
 def parse_population(line):
     args = line.split(":")[1].strip()
     npop, mbits = int(args.split(" ")[0]), int(args.split(" ")[1])
-    # print(npop, mbits)
 
     print(f"population : npop -> {npop}, mbits -> {mbits}\n")
     
