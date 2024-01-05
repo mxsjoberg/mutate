@@ -6,11 +6,6 @@ from tabulate import tabulate
 
 random.seed(42)
 
-program = """
-f: (x, y) -> -x * (y / 2 - 10); [10, 20] [-5, 7]
-p: 10 4
-"""
-
 def print_as_table(population):
     table = tabulate(
         population,
@@ -87,40 +82,58 @@ def generate_population(f, n_pop, x_range, y_range, m_bits):
 
     return pop_lst
 
-def parse(program):
-    for line in program.split("\n"):
-        line = line.strip()
-        if len(line) == 0:
-            pass
-        elif line[0] == "f":
-            fdef, ffun = line.split("->")[0], line.split("->")[1]
-            args = fdef.split(":")[1].strip()
-            fexpr, frange = ffun.split(";")[0].strip(), ffun.split(";")[1].strip()
+def parse_function(line):
+    fdef, ffun = line.split("->")[0], line.split("->")[1]
+    args = fdef.split(":")[1].strip()
+    fexpr, frange = ffun.split(";")[0].strip(), ffun.split(";")[1].strip()
 
-            symbols = sp.symbols(args[1:-1].split(","))
-            expr = sp.sympify(fexpr)
+    symbols = sp.symbols(args[1:-1].split(","))
+    expr = sp.sympify(fexpr)
 
-            f = sp.lambdify(symbols, expr, 'numpy')
-            # print(f(1, 2))
+    fun = sp.lambdify(symbols, expr, 'numpy')
+    # print(f(1, 2))
 
-            ranges = []
-            for range_ in frange.split("] ["):
-                frange_cleaned = range_.replace("[", "").replace("]", "")
-                ranges.append((int(frange_cleaned.split(",")[0]), int(frange_cleaned.split(",")[1])))
-            # print(ranges)
+    for range_ in frange.split("] ["):
+        frange_cleaned = range_.replace("[", "").replace("]", "")
+        ranges.append((int(frange_cleaned.split(",")[0]), int(frange_cleaned.split(",")[1])))
 
-            print(f"f: {expr}, s.t. {symbols} {ranges}\n")
+    print(f"fun: {expr}, s.t. {symbols} {ranges}\n")
 
-        elif line[0] == "p":
-            args = line.split(":")[1].strip()
-            npop, mbits = int(args.split(" ")[0]), int(args.split(" ")[1])
-            # print(npop, mbits)
+    return fun, symbols, ranges
 
-            print(f"npop: {npop}, mbits: {mbits}\n")
-            
-            current_population = generate_population(f, npop, ranges[0], ranges[1], mbits)
-            print_as_table(current_population)
+def parse_population(line):
+    args = line.split(":")[1].strip()
+    npop, mbits = int(args.split(" ")[0]), int(args.split(" ")[1])
+    # print(npop, mbits)
+
+    print(f"npop: {npop}, mbits: {mbits}\n")
+    
+    pop = generate_population(fun, npop, ranges[0], ranges[1], mbits)
+    print_as_table(pop)
+
+    return pop, npop, mbits
 
 if __name__ == "__main__":
-    parse(program)
+    fun, npop, mbits = None, None, None
+    symbols = []
+    ranges = []
+    
+    # parse(program)
+    while True:
+        line = input("> ")
+        
+        line = line.strip()
 
+        if line == "quit":
+            break
+
+        if line[0] == "f":
+            fun, symbols, ranges = parse_function(line)
+
+        if line[0] == "p":
+            pop, npop, mbits = parse_population(line)
+
+# program = """
+# f: (x, y) -> -x * (y / 2 - 10); [10, 20] [-5, 7]
+# p: 10 4
+# """
