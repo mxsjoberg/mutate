@@ -51,6 +51,7 @@ def decode(B, x_low, x_high, m):
 
 assert int(decode([1, 1, 0, 0, 1], -10, 14, 5)) == 9
 
+# TODO: generalize to n-range
 def generate_population(f, n_pop, x_range, y_range, m_bits):
     """Generate initial population
 
@@ -113,6 +114,9 @@ def parse_population(line):
 
     return pop, npop, mbits
 
+# f: (x, y) -> -x * (y / 2 - 10); [10, 20] [-5, 7]
+# p: 10 4
+
 if __name__ == "__main__":
     fun, npop, mbits = None, None, None
     symbols = []
@@ -132,8 +136,3 @@ if __name__ == "__main__":
 
         if line[0] == "p":
             pop, npop, mbits = parse_population(line)
-
-# program = """
-# f: (x, y) -> -x * (y / 2 - 10); [10, 20] [-5, 7]
-# p: 10 4
-# """
