@@ -82,11 +82,6 @@ def generate_population(f, n_pop, x_range, y_range, m_bits):
 
     return pop_lst
 
-
-
-
-
-
 program = """f: (x, y) -> -x * (y / 2 - 10); [10, 20] [-5, 7]"""
 
 fdef, ffun = program.split("->")[0], program.split("->")[1]
@@ -104,9 +99,8 @@ ranges = []
 for range_ in frange.split("] ["):
     frange_cleaned = range_.replace("[", "").replace("]", "")
     ranges.append((int(frange_cleaned.split(",")[0]), int(frange_cleaned.split(",")[1])))
+# print(ranges)
 
-print(ranges)
-
-
-
+current_population = generate_population(f, 100, ranges[0], ranges[1], 4)
+print_as_table(current_population)
 
