@@ -11,6 +11,6 @@ f: (x, y) -> -x * (y / 2 - 10) [10, 20] [-5, 7]
 ```
 generate population for cost function: p: <n-pop> [<xn-range>]* <bits>
 
-p: 100 [10, 20] [-5, 7] 4
+p: 100 4
 ```
 
