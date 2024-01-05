@@ -205,7 +205,12 @@ def parse_population(line):
 # !mutate 10
 
 if __name__ == "__main__":
-    fun, pop, npop, mbits, offsprings = None, None, None, None, None
+    fun = None
+    pop = None
+    npop = None
+    mbits = None
+    offsprings = None
+    solution = None
     # symbols = []
     # ranges = []
     
@@ -250,6 +255,10 @@ if __name__ == "__main__":
                     mbits
                 )
 
+            solution = pop[0][2]
+
             print_as_table(pop)
+
+            print(f"solution -> {solution}\n")
 
 
