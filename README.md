@@ -1,8 +1,6 @@
 # mutate
 
-DSL for genetic algorithms.
-
-## Status
+DSL for binary genetic algorithm.
 
 ```
 $ python3 mutate.py
